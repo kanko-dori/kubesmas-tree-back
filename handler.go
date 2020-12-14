@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 )
 
 type Request struct {
@@ -29,7 +30,7 @@ type PostResponse struct {
 	CurrentData GETResponse `json:"currentData"`
 }
 
-var errorResponse = []byte("ERROR")
+var errorResponse = []byte(`{"response":"NG"}`)
 
 func handler(s []byte) []byte {
 	var r Request
@@ -59,15 +60,17 @@ func handler(s []byte) []byte {
 }
 
 func getHandler() ([]byte, error) {
+	n := rand.Intn(5) + 1
+	ns := rand.Intn(5) + 1
 	id := IlluminationData{
-		Pattern1: 20,
-		Pattern2: 40,
-		Pattern3: 30,
-		Pattern4: 10,
+		Pattern1: n * 5,
+		Pattern2: (10 - n) * 5,
+		Pattern3: ns * 5,
+		Pattern4: (10 - ns) * 5,
 	}
 	r := GETResponse{
-		Pods:                10,
-		IlluminationPattern: 1,
+		Pods:                rand.Intn(30),
+		IlluminationPattern: rand.Intn(4),
 		IlluminationData:    id,
 	}
 	b, err := json.Marshal(r)
@@ -80,15 +83,17 @@ func getHandler() ([]byte, error) {
 
 func voteHandler(uid string, votedPattern int) ([]byte, error) {
 	log.Println(uid, votedPattern)
+	n := rand.Intn(5) + 1
+	ns := rand.Intn(5) + 1
 	id := IlluminationData{
-		Pattern1: 20,
-		Pattern2: 40,
-		Pattern3: 30,
-		Pattern4: 10,
+		Pattern1: n * 5,
+		Pattern2: (10 - n) * 5,
+		Pattern3: ns * 5,
+		Pattern4: (10 - ns) * 5,
 	}
 	gr := GETResponse{
-		Pods:                10,
-		IlluminationPattern: 1,
+		Pods:                rand.Intn(30),
+		IlluminationPattern: rand.Intn(4),
 		IlluminationData:    id,
 	}
 	r := PostResponse{

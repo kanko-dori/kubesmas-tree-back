@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
+	"math/rand"
 	"net/http"
+	"time"
 )
 
 // We'll need to define an Upgrader
@@ -59,6 +61,7 @@ func setupRoutes() {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 	fmt.Println("Hello World")
 	setupRoutes()
 	log.Fatal(http.ListenAndServe(":80", nil))
