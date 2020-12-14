@@ -16,7 +16,7 @@ spec:
         "beta.kubernetes.io/os": linux
       containers:
         - name: deployment
-          image: onsd/websocket-test:0.3
+          image: onsd/websocket-test:0.4
           resources:
             requests:
               cpu: 100m
