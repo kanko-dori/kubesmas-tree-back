@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: deployment
@@ -16,7 +16,7 @@ spec:
         "beta.kubernetes.io/os": linux
       containers:
         - name: deployment
-          image: onsd/websocket-test:0.4
+          image: onsd/kubesmas-tree:0.1
           resources:
             requests:
               cpu: 100m
