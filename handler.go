@@ -1,8 +1,13 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"log"
 	"math/rand"
 )
@@ -59,6 +64,25 @@ func handler(s []byte) []byte {
 	return errorResponse
 }
 
+func getPods() (*v1.PodList, error) {
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+
+	pods, err := clientset.CoreV1().Pods("kubesmas-tree").List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	return pods, nil
+}
+
 func getHandler() ([]byte, error) {
 	n := rand.Intn(5) + 1
 	ns := rand.Intn(5) + 1
@@ -68,8 +92,12 @@ func getHandler() ([]byte, error) {
 		Pattern3: ns * 5,
 		Pattern4: (10 - ns) * 5,
 	}
+	pods, err := getPods()
+	if err != nil {
+		log.Println("failed to getPods(): %v", err)
+	}
 	r := GETResponse{
-		Pods:                rand.Intn(30),
+		Pods:                len(pods.Items),
 		IlluminationPattern: rand.Intn(4),
 		IlluminationData:    id,
 	}
