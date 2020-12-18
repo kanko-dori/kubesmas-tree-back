@@ -16,7 +16,7 @@ spec:
         "beta.kubernetes.io/os": linux
       containers:
         - name: deployment
-          image: onsd/kubesmas-tree:0.1
+          image: onsd/kubesmas-tree:0.2
           resources:
             requests:
               cpu: 100m
