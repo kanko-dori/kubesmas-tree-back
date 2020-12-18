@@ -119,8 +119,12 @@ func voteHandler(uid string, votedPattern int) ([]byte, error) {
 		Pattern3: ns * 5,
 		Pattern4: (10 - ns) * 5,
 	}
+	pods, err := getPods()
+	if err != nil {
+		log.Println("failed to getPods(): %v", err)
+	}
 	gr := GETResponse{
-		Pods:                rand.Intn(30),
+		Pods:                len(pods.Items),
 		IlluminationPattern: rand.Intn(4),
 		IlluminationData:    id,
 	}
