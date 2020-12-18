@@ -34,13 +34,13 @@ func SetToken(cli *redis.Client, token string, userId int) error {
 }
 
 func GetIDByToken(cli *redis.Client, token string) (int, error){
-	v, err := cli.Get(tokenKey+token).Result()
+	v, err := cli.Get(token).Result()
 	if err != nil {
 		return 0, errors.Wrapf(err, "failed to get id from redis by token")
 	}
 	id, err := strconv.Atoi(v)
 	if err != nil {
-		return 0, errors.Wrapf(err, "failed to convert string to inte")
+		return 0, errors.Wrapf(err, "failed to convert string to integer")
 	}
 	return id, nil
 }
