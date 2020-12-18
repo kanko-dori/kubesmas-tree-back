@@ -1,10 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: deployment
+  name: kubesmas-tree
+  namespace: kubesmas-tree
 spec:
   type: LoadBalancer
   ports:
     - port: 80
+      targetPort: 8080
   selector:
-    app: deployment
+    app: kubesmas-tree

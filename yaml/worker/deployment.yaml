@@ -1,23 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment
+  name: kubesmas-worker
   namespace: kubesmas-tree
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: deployment
+      app: worker
   template:
     metadata:
       labels:
-        app: deployment
+        app: worker
     spec:
-      nodeSelector:
-        "beta.kubernetes.io/os": linux
+      serviceAccountName: worker-edit
       containers:
-        - name: deployment
-          image: onsd/kubesmas-tree:0.1
+        - name: worker
+          image: onsd/kubesmas-worker:0.10
           resources:
             requests:
               cpu: 100m
@@ -25,6 +24,6 @@ spec:
             limits:
               cpu: 250m
               memory: 256Mi
-          ports:
-            - containerPort: 80
-
+          env:
+            - name: REDIS_PATH
+              value: "redis:6379"
