@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubesmas-tree
+  namespace: kubesmas-tree
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kubesmas-tree
+  template:
+    metadata:
+      labels:
+        app: kubesmas-tree
+    spec:
+      containers:
+        - name: kubesmas-tree
+          image: onsd/kubesmas-tree:0.8
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          ports:
+            - containerPort: 8080
+          env:
+            - name: REDIS_PATH
+              value: "redis:6379"
+            - name: "PORT"
+              value: "8080"
