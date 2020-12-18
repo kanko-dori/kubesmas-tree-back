@@ -1,4 +1,4 @@
-package main
+package kubesmas_tree
 
 import (
 	"context"
