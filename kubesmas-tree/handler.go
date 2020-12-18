@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -43,7 +42,7 @@ func handler(s []byte) []byte {
 		log.Println("cannot unmarshal request: %v, err: %v\n", s, err)
 		return errorResponse
 	}
-	fmt.Printf("%v\n", r)
+	//fmt.Printf("%v\n", r)
 
 	switch {
 	case r.Action == "GET":
@@ -75,7 +74,9 @@ func getPods() (*v1.PodList, error) {
 		return nil, err
 	}
 
-	pods, err := clientset.CoreV1().Pods("kubesmas-tree").List(context.TODO(), metav1.ListOptions{})
+	pods, err := clientset.CoreV1().Pods("kubesmas-tree").List(context.TODO(), metav1.ListOptions{
+		LabelSelector: "app=nginx",
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -92,12 +93,13 @@ func getHandler() ([]byte, error) {
 		Pattern3: ns * 5,
 		Pattern4: (10 - ns) * 5,
 	}
-	pods, err := getPods()
-	if err != nil {
-		log.Println("failed to getPods(): %v", err)
-	}
+	//pods, err := getPods()
+	//if err != nil {
+	//	log.Println("failed to getPods(): %v", err)
+	//}
 	r := GETResponse{
-		Pods:                len(pods.Items),
+		//Pods:                len(pods.Items),
+		Pods:                5,
 		IlluminationPattern: rand.Intn(4),
 		IlluminationData:    id,
 	}
@@ -125,6 +127,7 @@ func voteHandler(uid string, votedPattern int) ([]byte, error) {
 	}
 	gr := GETResponse{
 		Pods:                len(pods.Items),
+		//Pods:                5,
 		IlluminationPattern: rand.Intn(4),
 		IlluminationData:    id,
 	}
