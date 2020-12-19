@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: kubesmas-tree
-          image: onsd/kubesmas-tree:0.8
+          image: onsd/kubesmas-tree:0.23
           resources:
             requests:
               cpu: 100m
