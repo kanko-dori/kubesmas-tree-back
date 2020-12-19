@@ -3,16 +3,15 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"main/persistence/redis"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"log"
-	"math/rand"
+	"main/persistence/redis"
 	"net/http"
-	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -72,8 +71,13 @@ func handler(s []byte) []byte {
 
 func iotEndpoint(w http.ResponseWriter, r *http.Request) {
 	p, _ := getPods()
-	i := rand.Intn(4)
-	m := fmt.Sprintf("%d,%d", len(p.Items), i)
+	cip, err := getValue("CURRENT_ILLUMINATION_PATTERN")
+	if err != nil {
+		fmt.Println("")
+		return
+	}
+	log.Printf("current Pods are :%d, pattern is :%d\n", len(p.Items), cip)
+	m := fmt.Sprintf("%d,%d", len(p.Items), cip)
 	fmt.Fprintf(w, m)
 }
 
@@ -158,10 +162,10 @@ func getHandler() ([]byte, error) {
 
 func voteHandler(uid string, votePattern int) ([]byte, error) {
 	log.Println(uid, votePattern)
-	if 3 < votePattern {
+	if !(0 < votePattern && votePattern < 4) {
 		return nil, errors.New("VotedPattern is invalid")
 	}
-	err := addValue(voteLabel[votePattern])
+	err := addValue(voteLabel[votePattern - 1])
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to addValue")
 	}
