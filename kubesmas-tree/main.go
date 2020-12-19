@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
-	"main/persistence/redis"
 	"math/rand"
 	"net/http"
 	"os"
@@ -46,49 +45,30 @@ func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 		return true
 	}
 
-	redisPath := os.Getenv("REDIS_PATH")
-
-	client, err := redis.New(redisPath)
-	if err != nil {
-		log.Printf("failed to get redis client: %v\n", err)
-		return
-	}
-	defer client.Close()
-
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 	}
 	log.Println("Client Connected")
 
-	err = client.Get(CLIENT_NUM).Err()
-	if err == redis.Nil {
-		log.Println("CLIENT_NUM does not exist. creating now...")
-
-		err = client.Set(CLIENT_NUM, 1, time.Hour*24).Err()
-		if err != nil {
-			log.Printf("failed to set CLIENT_NUM: %v\n", err)
-			return
-		}
-	} else if err != nil {
-		log.Printf("failed to get Client_NUM: %v\n", err)
-	} else {
-		currentNum, err := client.Incr(CLIENT_NUM).Result()
-		if err != nil {
-			log.Printf("failed to incr CLIENT_NUM: %v\n", err)
-		}
-		log.Printf("currentNum: %d\n", currentNum)
+	err = addValue(CLIENT_NUM)
+	if err != nil {
+		log.Println(err)
+		ws.WriteMessage(1, []byte("Failed to addValue. close connection."))
+		return
 	}
 
 	err = ws.WriteMessage(1, []byte("Hi Client!"))
 	if err != nil {
 		log.Println(err)
 	}
+
 	reader(ws)
+
 	log.Println("Client Disconnected.")
-	currentNum, err := client.Decr(CLIENT_NUM).Result()
+	currentNum, err := declValue(CLIENT_NUM)
 	if err != nil {
-		fmt.Printf("failed to decr CLIENT_NUM: %v\n", err)
+		log.Println(err)
 		return
 	}
 	fmt.Printf("Successfully decrement CLIENT_NUM.\ncurrent num is :%d\n", currentNum)
@@ -97,11 +77,12 @@ func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 func setupRoutes() {
 	http.HandleFunc("/", homePage)
 	http.HandleFunc("/ws", wsEndpoint)
+	http.HandleFunc("/iot", iotEndpoint)
 }
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	fmt.Println("Hello World!")
 	setupRoutes()
-	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), nil))
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), nil))
 }
