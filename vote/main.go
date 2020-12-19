@@ -1,4 +1,4 @@
-package vote
+package main
 
 import (
 	"fmt"
@@ -27,24 +27,25 @@ func main(){
 	defer client.Close()
 
 	p1, err := getValue(client, "PATTERN_1")
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		fmt.Printf("failed to get value from client: %v", err)
 		os.Exit(-1)
 		return
 	}
 	p2, err := getValue(client, "PATTERN_2")
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		fmt.Printf("failed to get value from client: %v", err)
 		os.Exit(-1)
 		return
 	}
 	p3, err := getValue(client, "PATTERN_3")
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		fmt.Printf("failed to get value from client: %v", err)
 		os.Exit(-1)
 		return
 	}
 
+	fmt.Printf("p1: %d, p2: %d, p3: %d\n", p1, p2,)
 	if p1 > p2 || p1 > p3 {
 		// p1 is max
 		err := setValue(client, "CURRENT_ILLUMINATION_PATTERN", 1)
@@ -74,19 +75,19 @@ func main(){
 		fmt.Println("current pattern is 3")
 	}
 	err = setValue(client, "PATTERN_1", 0)
-	if err != nil {
+	if  err == redis.Nil && err != nil {
 		fmt.Printf("failed to setValue: %v\n", err)
 		os.Exit(-1)
 		return
 	}
 	err = setValue(client, "PATTERN_2", 0)
-	if err != nil {
+	if err == redis.Nil && err != nil {
 		fmt.Printf("failed to setValue: %v\n", err)
 		os.Exit(-1)
 		return
 	}
 	err = setValue(client, "PATTERN_3", 0)
-	if err != nil {
+	if err == redis.Nil && err != nil {
 		fmt.Printf("failed to setValue: %v\n", err)
 		os.Exit(-1)
 		return
