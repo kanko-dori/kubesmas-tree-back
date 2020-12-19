@@ -130,9 +130,14 @@ func getCurrentValues() (*GETResponse, error) {
 		return nil, errors.Wrap(err, "failed to getPods()")
 	}
 
+	cip, err := getValue("CURRENT_ILLUMINATION_PATTERN")
+	if err != nil {
+		return nil, err
+	}
+
 	r := GETResponse{
 		Pods:                len(pods.Items),
-		IlluminationPattern: rand.Intn(4),
+		IlluminationPattern: cip,
 		IlluminationData:    *id,
 	}
 	return &r, nil
@@ -153,10 +158,10 @@ func getHandler() ([]byte, error) {
 
 func voteHandler(uid string, votePattern int) ([]byte, error) {
 	log.Println(uid, votePattern)
-	if votePattern == 0 || 3 < votePattern {
+	if 3 < votePattern {
 		return nil, errors.New("VotedPattern is invalid")
 	}
-	err := addValue(voteLabel[votePattern-1])
+	err := addValue(voteLabel[votePattern])
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to addValue")
 	}
@@ -226,6 +231,7 @@ func addValue(target string) error {
 	}
 	return nil
 }
+
 func declValue(target string) (int, error){
 	redisPath := os.Getenv("REDIS_PATH")
 	client, err := redis.New(redisPath)

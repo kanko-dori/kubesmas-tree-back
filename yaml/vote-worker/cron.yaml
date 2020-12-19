@@ -1,0 +1,19 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: vote-cron
+  namespace: kubesmas-tree
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: vote-cron
+              image: onsd/vote-cron:0.4
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: REDIS_PATH
+                  value: "redis:6379"
+          restartPolicy: OnFailure
