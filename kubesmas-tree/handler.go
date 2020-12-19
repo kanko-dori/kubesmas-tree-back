@@ -158,10 +158,10 @@ func getHandler() ([]byte, error) {
 
 func voteHandler(uid string, votePattern int) ([]byte, error) {
 	log.Println(uid, votePattern)
-	if votePattern == 0 || 3 < votePattern {
+	if 3 < votePattern {
 		return nil, errors.New("VotedPattern is invalid")
 	}
-	err := addValue(voteLabel[votePattern-1])
+	err := addValue(voteLabel[votePattern])
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to addValue")
 	}
