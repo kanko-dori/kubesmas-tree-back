@@ -17,6 +17,16 @@ type IlluminationData struct {
 }
 
 func main(){
+	fmt.Println("Check for first vote")
+	checkVote()
+	fmt.Println("sleep for 25 sec")
+	time.Sleep(time.Second * 25)
+
+	fmt.Println("Check for second vote")
+	checkVote()
+}
+
+func checkVote(){
 	redisPath := os.Getenv("REDIS_PATH")
 	client, err := getNewRedis(redisPath)
 	if err != nil {
@@ -45,7 +55,7 @@ func main(){
 		return
 	}
 
-	fmt.Printf("p1: %d, p2: %d, p3: %d\n", p1, p2,)
+	fmt.Printf("p1: %d, p2: %d, p3: %d\n", p1, p2, p3)
 	if p1 > p2 || p1 > p3 {
 		// p1 is max
 		err := setValue(client, "CURRENT_ILLUMINATION_PATTERN", 1)
