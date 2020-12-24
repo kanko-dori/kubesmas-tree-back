@@ -1,0 +1,48 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: kubesmas-ingress
+  namespace: kubesmas-tree
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  tls:
+    - hosts:
+        - kubesmas-tree.cf
+      secretName: tls-secret-prod
+  rules:
+    - host: kubesmas-tree.cf
+      http:
+        paths:
+          - backend:
+              serviceName: kubesmas-tree
+              servicePort: 80
+            path: /backend(/|$)(.*)
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: kubesmas-ingress-static
+  namespace: kubesmas-tree
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+    - hosts:
+        - kubesmas-tree.cf
+      secretName: tls-secret-prod
+  rules:
+    - host: kubesmas-tree.cf
+      http:
+        paths:
+          - backend:
+              serviceName: kubesmas-front
+              servicePort: 80
+            path: /(.*)
