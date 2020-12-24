@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
             - name: vote-cron
-              image: onsd/vote-cron:0.4
+              image: onsd/vote-cron:0.6
               imagePullPolicy: IfNotPresent
               env:
                 - name: REDIS_PATH
